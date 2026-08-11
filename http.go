@@ -57,6 +57,7 @@ func doRequest(httpClient *http.Client, baseURL, path, method, apiKey string, bo
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("X-Mailofly-Client", "sdk/go")
 	if apiKey != "" {
 		req.Header.Set("Authorization", "Bearer "+apiKey)
 	}
