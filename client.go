@@ -17,6 +17,7 @@ type Client struct {
 	Segments  *SegmentsService
 	Campaigns *CampaignsService
 	Compose   *ComposeService
+	Emails    *EmailsService
 	MailLogs  *MailLogsService
 }
 
@@ -44,6 +45,7 @@ func New(opts Options) (*Client, error) {
 	c.Segments = &SegmentsService{c: c, Contacts: &SegmentContactsService{c}}
 	c.Campaigns = &CampaignsService{c}
 	c.Compose = &ComposeService{c}
+	c.Emails = &EmailsService{c}
 	c.MailLogs = &MailLogsService{c}
 	return c, nil
 }
@@ -181,11 +183,18 @@ func (s *CampaignsService) Send(id string, body map[string]any) (any, error) {
 	return s.c.req("/campaigns/"+enc(id)+"/send", http.MethodPost, body, nil)
 }
 
-// ComposeService sends one-off email.
+// ComposeService sends one-off email (deprecated — use EmailsService).
 type ComposeService struct{ c *Client }
 
 func (s *ComposeService) Send(params map[string]any) (any, error) {
-	return s.c.req("/compose", http.MethodPost, params, nil)
+	return s.c.req("/emails", http.MethodPost, params, nil)
+}
+
+// EmailsService sends transactional email.
+type EmailsService struct{ c *Client }
+
+func (s *EmailsService) Send(params map[string]any) (any, error) {
+	return s.c.req("/emails", http.MethodPost, params, nil)
 }
 
 // MailLogsListOptions filters mail logs.

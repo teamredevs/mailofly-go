@@ -32,11 +32,11 @@ func main() {
 		panic(err)
 	}
 
-	result, err := client.Compose.Send(map[string]any{
-		"account_key": "acc_…",
-		"subject":     "Hello",
-		"body":        "<p>Hi from Mailofly</p>",
-		"recipients":  map[string]any{"emails": []string{"you@example.com"}},
+	result, err := client.Emails.Send(map[string]any{
+		"from":    "Acme <onboarding@example.com>",
+		"to":      []string{"you@example.com"},
+		"subject": "Hello",
+		"html":    "<p>Hi from Mailofly</p>",
 	})
 	if err != nil {
 		if apiErr, ok := err.(*mailofly.Error); ok {
@@ -44,7 +44,7 @@ func main() {
 		}
 		panic(err)
 	}
-	fmt.Println(result)
+	fmt.Println(result["id"])
 }
 ```
 
