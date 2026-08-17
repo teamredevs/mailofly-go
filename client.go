@@ -18,6 +18,7 @@ type Client struct {
 	Campaigns *CampaignsService
 	Compose   *ComposeService
 	Emails    *EmailsService
+	Batch     *BatchService
 	MailLogs  *MailLogsService
 }
 
@@ -46,6 +47,7 @@ func New(opts Options) (*Client, error) {
 	c.Campaigns = &CampaignsService{c}
 	c.Compose = &ComposeService{c}
 	c.Emails = &EmailsService{c}
+	c.Batch = &BatchService{c}
 	c.MailLogs = &MailLogsService{c}
 	return c, nil
 }
@@ -195,6 +197,40 @@ type EmailsService struct{ c *Client }
 
 func (s *EmailsService) Send(params map[string]any) (any, error) {
 	return s.c.req("/emails", http.MethodPost, params, nil)
+}
+
+func (s *EmailsService) Get(id string) (any, error) {
+	return s.c.req("/emails/"+enc(id), http.MethodGet, nil, nil)
+}
+
+func (s *EmailsService) List(opts *EmailsListOptions) (any, error) {
+	q := map[string]string{}
+	if opts != nil {
+		if opts.Limit > 0 {
+			q["limit"] = strconv.Itoa(opts.Limit)
+		}
+		if opts.After != "" {
+			q["after"] = opts.After
+		}
+		if opts.Before != "" {
+			q["before"] = opts.Before
+		}
+	}
+	return s.c.req("/emails", http.MethodGet, nil, q)
+}
+
+// EmailsListOptions filters list emails (Resend cursor pagination).
+type EmailsListOptions struct {
+	Limit  int
+	After  string
+	Before string
+}
+
+// BatchService sends multiple emails (POST /emails/batch).
+type BatchService struct{ c *Client }
+
+func (s *BatchService) Send(emails []map[string]any) (any, error) {
+	return s.c.req("/emails/batch", http.MethodPost, emails, nil)
 }
 
 // MailLogsListOptions filters mail logs.

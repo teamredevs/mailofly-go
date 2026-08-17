@@ -45,6 +45,15 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(result["id"])
+
+	batch, err := client.Batch.Send([]map[string]any{
+		{"from": "Acme <onboarding@example.com>", "to": []string{"a@b.com"}, "subject": "Hi", "html": "<p>1</p>"},
+		{"from": "Acme <onboarding@example.com>", "to": []string{"c@d.com"}, "subject": "Hi", "html": "<p>2</p>"},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(batch)
 }
 ```
 
