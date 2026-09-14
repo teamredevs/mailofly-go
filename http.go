@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	DefaultBaseURL = "https://www.mailofly.com"
+	DefaultBaseURL = "https://api.mailofly.com"
 	APIPrefix      = "/api/v1"
 )
 

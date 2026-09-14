@@ -11,8 +11,9 @@ type Client struct {
 	baseURL    string
 	httpClient *http.Client
 
-	Accounts  *AccountsService
-	Contacts  *ContactsService
+	Identities *IdentitiesService
+	Accounts   *IdentitiesService
+	Contacts   *ContactsService
 	Templates *TemplatesService
 	Segments  *SegmentsService
 	Campaigns *CampaignsService
@@ -40,7 +41,8 @@ func New(opts Options) (*Client, error) {
 		baseURL:    normalizeBaseURL(opts.BaseURL),
 		httpClient: opts.HTTPClient,
 	}
-	c.Accounts = &AccountsService{c}
+	c.Identities = &IdentitiesService{c}
+	c.Accounts = c.Identities
 	c.Contacts = &ContactsService{c}
 	c.Templates = &TemplatesService{c}
 	c.Segments = &SegmentsService{c: c, Contacts: &SegmentContactsService{c}}
@@ -61,23 +63,20 @@ func (c *Client) req(path, method string, body any, query map[string]string) (an
 	return doRequest(c.httpClient, c.baseURL, APIPrefix+path, method, c.apiKey, body, query)
 }
 
-// AccountsService manages sending accounts.
-type AccountsService struct{ c *Client }
+// IdentitiesService manages sending identities (creation is dashboard-only).
+type IdentitiesService struct{ c *Client }
 
-func (s *AccountsService) List() (any, error) {
-	return s.c.req("/accounts", http.MethodGet, nil, nil)
+func (s *IdentitiesService) List() (any, error) {
+	return s.c.req("/identities", http.MethodGet, nil, nil)
 }
-func (s *AccountsService) Create(body map[string]any) (any, error) {
-	return s.c.req("/accounts", http.MethodPost, body, nil)
+func (s *IdentitiesService) Get(id string) (any, error) {
+	return s.c.req("/identities/"+enc(id), http.MethodGet, nil, nil)
 }
-func (s *AccountsService) Get(id string) (any, error) {
-	return s.c.req("/accounts/"+enc(id), http.MethodGet, nil, nil)
+func (s *IdentitiesService) Update(id string, body map[string]any) (any, error) {
+	return s.c.req("/identities/"+enc(id), http.MethodPatch, body, nil)
 }
-func (s *AccountsService) Update(id string, body map[string]any) (any, error) {
-	return s.c.req("/accounts/"+enc(id), http.MethodPatch, body, nil)
-}
-func (s *AccountsService) Delete(id string) (any, error) {
-	return s.c.req("/accounts/"+enc(id), http.MethodDelete, nil, nil)
+func (s *IdentitiesService) Delete(id string) (any, error) {
+	return s.c.req("/identities/"+enc(id), http.MethodDelete, nil, nil)
 }
 
 // ContactsService manages contacts.
