@@ -54,9 +54,13 @@ func New(opts Options) (*Client, error) {
 	return c, nil
 }
 
-// Discovery performs unauthenticated GET /api/v1.
+// Discovery performs unauthenticated GET /.
 func Discovery(baseURL string) (any, error) {
-	return doRequest(nil, normalizeBaseURL(baseURL), APIPrefix, http.MethodGet, "", nil, nil)
+	discPath := "/"
+	if APIPrefix != "" {
+		discPath = APIPrefix
+	}
+	return doRequest(nil, normalizeBaseURL(baseURL), discPath, http.MethodGet, "", nil, nil)
 }
 
 func (c *Client) req(path, method string, body any, query map[string]string) (any, error) {

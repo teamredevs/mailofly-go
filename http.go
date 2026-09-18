@@ -13,7 +13,7 @@ import (
 
 const (
 	DefaultBaseURL = "https://api.mailofly.com"
-	APIPrefix      = "/api/v1"
+	APIPrefix      = ""
 )
 
 func normalizeBaseURL(base string) string {
